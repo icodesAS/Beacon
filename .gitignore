@@ -23,3 +23,10 @@ frontend/out/
 frontend/build/
 frontend/next-env.d.ts
 *.tsbuildinfo
+
+# Playwright / E2E Artifacts
+playwright-report/
+test-results/
+.playwright-mcp/
+frontend/playwright-report/
+frontend/test-results/

@@ -55,3 +55,18 @@ export const contactSchema = z.object({
 });
 
 export type ContactFormValues = z.infer<typeof contactSchema>;
+
+export const sosMessageSchema = z.object({
+  message: z
+    .string()
+    .trim()
+    .min(5, "Message must be at least 5 characters.")
+    .max(300, "Message must be at most 300 characters."),
+  locationText: z
+    .string()
+    .trim()
+    .max(100, "Location must be at most 100 characters.")
+    .optional(),
+});
+
+export type SosMessageFormValues = z.infer<typeof sosMessageSchema>;

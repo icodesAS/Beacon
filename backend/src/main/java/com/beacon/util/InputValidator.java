@@ -1,6 +1,7 @@
 package com.beacon.util;
 
 import com.beacon.exception.ValidationException;
+import com.beacon.model.EmergencyCategory;
 import com.beacon.model.Relation;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -119,6 +120,32 @@ public final class InputValidator {
             Relation.fromString(relation);
         } catch (IllegalArgumentException ex) {
             errors.put("relation", "Please select a valid relation.");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException("Please check the highlighted fields.", errors);
+        }
+    }
+
+    public static void validateAlertCreate(String category, String message, String locationText) {
+        Map<String, String> errors = new LinkedHashMap<>();
+
+        try {
+            EmergencyCategory.fromString(category);
+        } catch (IllegalArgumentException ex) {
+            errors.put("category", "Please select a valid emergency category.");
+        }
+
+        String trimmedMessage = message == null ? "" : message.trim();
+        if (trimmedMessage.length() < 5 || trimmedMessage.length() > 300) {
+            errors.put("message", "Message must be between 5 and 300 characters.");
+        }
+
+        if (locationText != null && !locationText.isBlank()) {
+            String trimmedLocation = locationText.trim();
+            if (trimmedLocation.length() > 100) {
+                errors.put("locationText", "Location must be at most 100 characters.");
+            }
         }
 
         if (!errors.isEmpty()) {
