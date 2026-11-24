@@ -18,6 +18,7 @@ import {
   Siren,
   Users,
 } from "lucide-react";
+import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -70,7 +71,13 @@ function renderCategoryIcon(category: EmergencyCategory, className: string) {
 }
 
 export default function SosPage() {
-  const { data: contacts = [], isLoading: contactsLoading } = useContacts();
+  const {
+    data: contacts = [],
+    isLoading: contactsLoading,
+    isError: contactsError,
+    error: contactsErrObj,
+    refetch: refetchContacts,
+  } = useContacts();
   const createAlert = useCreateAlert();
 
   const [step, setStep] = useState<SosStep>("category");
@@ -113,6 +120,7 @@ export default function SosPage() {
         setDuplicateOpen(false);
         setSentAlert(created);
         setStep("success");
+        toast.success("SOS sent (simulated).");
       } catch (err) {
         if (
           err instanceof ApiError &&
@@ -247,8 +255,35 @@ export default function SosPage() {
           </div>
         )}
 
+        {/* Contacts Error State */}
+        {!contactsLoading && contactsError && (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center gap-3 py-10 text-center">
+              <AlertTriangle
+                className="h-8 w-8 text-[var(--warning)]"
+                aria-hidden="true"
+              />
+              <div>
+                <p className="font-medium">Could not load emergency contacts</p>
+                <p className="text-sm text-[var(--text-muted)]">
+                  {contactsErrObj instanceof Error
+                    ? contactsErrObj.message
+                    : "Please check your connection and try again."}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => void refetchContacts()}
+              >
+                Try again
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Zero Contacts Blocker */}
-        {!contactsLoading && contacts.length === 0 && (
+        {!contactsLoading && !contactsError && contacts.length === 0 && (
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -277,7 +312,7 @@ export default function SosPage() {
         )}
 
         {/* Main SOS Wizard */}
-        {!contactsLoading && contacts.length > 0 && (
+        {!contactsLoading && !contactsError && contacts.length > 0 && (
           <>
             {/* Step Progress Indicator */}
             {step !== "success" && (

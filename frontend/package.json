@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test src/lib/validation.test.ts src/lib/templates.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.9",
@@ -18,6 +19,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-hook-form": "^7.92.0",
+    "recharts": "^3.11.1",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.7.1",
     "zod": "^4.6.7"

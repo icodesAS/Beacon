@@ -4,6 +4,7 @@ import java.util.Locale;
 
 /**
  * Lifecycle statuses for an SOS alert with explicit state transition rules.
+ * Concept (03-java-concepts-map): Rule-based processing & Enum behavior — centralizes valid status transitions.
  */
 public enum AlertStatus {
     CREATED,

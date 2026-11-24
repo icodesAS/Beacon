@@ -2,6 +2,7 @@ package com.beacon.controller;
 
 import com.beacon.dto.AlertResponse;
 import com.beacon.dto.CreateAlertRequest;
+import com.beacon.dto.PagedAlertsResponse;
 import com.beacon.dto.UpdateAlertStatusRequest;
 import com.beacon.model.Alert;
 import com.beacon.security.SessionConstants;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -41,6 +43,20 @@ public class AlertController {
         int userId = getUserId(request);
         Alert created = alertService.createAlert(userId, body);
         return ResponseEntity.status(HttpStatus.CREATED).body(AlertResponse.from(created));
+    }
+
+    @GetMapping
+    @Operation(summary = "List user SOS alerts with optional filtering, sorting, and pagination")
+    public ResponseEntity<PagedAlertsResponse> listAlerts(
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            HttpServletRequest request) {
+        int userId = getUserId(request);
+        return ResponseEntity.ok(alertService.listAlerts(userId, sort, category, status, search, page, size));
     }
 
     @GetMapping("/{id}")

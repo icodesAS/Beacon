@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Primary alert sender that delegates to SimulatedAlertSender and logs each simulated dispatch.
+ * Concept (03-java-concepts-map): Polymorphism — wraps any AlertSender without changing AlertService.
  */
 @Primary
 @Component

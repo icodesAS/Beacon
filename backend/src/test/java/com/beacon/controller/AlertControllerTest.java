@@ -3,11 +3,14 @@ package com.beacon.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.beacon.dto.AlertResponse;
+import com.beacon.dto.PagedAlertsResponse;
 import com.beacon.model.Alert;
 import com.beacon.model.AlertRecipient;
 import com.beacon.model.AlertStatus;
@@ -61,6 +64,28 @@ class AlertControllerTest {
                 .andExpect(jsonPath("$.priority").value(1))
                 .andExpect(jsonPath("$.status").value("SENT"))
                 .andExpect(jsonPath("$.recipients[0].contactName").value("Priya Nair"));
+    }
+
+    @Test
+    void listAlertsWithSessionReturnsPagedResponse() throws Exception {
+        AlertResponse item = AlertResponse.from(sampleAlert(12, AlertStatus.SENT));
+        PagedAlertsResponse paged = new PagedAlertsResponse(List.of(item), 0, 10, 1, 1);
+        when(alertService.listAlerts(7, "newest", "MEDICAL", null, null, 0, 10)).thenReturn(paged);
+
+        MockHttpSession session = sessionFor(7);
+
+        mockMvc.perform(get("/api/alerts")
+                        .session(session)
+                        .param("sort", "newest")
+                        .param("category", "MEDICAL")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items[0].id").value(12))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.totalItems").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1));
     }
 
     @Test

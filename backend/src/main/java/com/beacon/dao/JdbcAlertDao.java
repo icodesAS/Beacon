@@ -39,6 +39,9 @@ public class JdbcAlertDao implements AlertDao {
     private static final String SQL_FIND_BY_ID_AND_USER =
             "SELECT id, user_id, category, priority, message, location_text, status, created_at, updated_at "
                     + "FROM alerts WHERE id = ? AND user_id = ?";
+    private static final String SQL_FIND_ALL_BY_USER =
+            "SELECT id, user_id, category, priority, message, location_text, status, created_at, updated_at "
+                    + "FROM alerts WHERE user_id = ? ORDER BY created_at DESC, id DESC";
     private static final String SQL_FIND_RECIPIENTS_BY_ALERT =
             "SELECT id, alert_id, contact_name, contact_phone, contact_relation, notified_at "
                     + "FROM alert_recipients WHERE alert_id = ? ORDER BY id ASC";
@@ -144,6 +147,23 @@ public class JdbcAlertDao implements AlertDao {
             }
         } catch (SQLException ex) {
             throw new IllegalStateException("Failed to load alert", ex);
+        }
+    }
+
+    @Override
+    public List<Alert> findAllByUserId(int userId) {
+        List<Alert> alerts = new ArrayList<>();
+        try (Connection conn = databaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(SQL_FIND_ALL_BY_USER)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    alerts.add(mapRow(rs));
+                }
+            }
+            return alerts;
+        } catch (SQLException ex) {
+            throw new IllegalStateException("Failed to load alerts for user", ex);
         }
     }
 

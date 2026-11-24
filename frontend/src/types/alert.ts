@@ -113,3 +113,118 @@ export interface CreateAlertPayload {
   locationText?: string;
   force: boolean;
 }
+
+export type AlertSortOption = "newest" | "oldest" | "priority";
+
+export interface AlertListParams {
+  sort?: AlertSortOption;
+  category?: EmergencyCategory | "";
+  status?: AlertStatus | "";
+  search?: string;
+  page?: number;
+  size?: number;
+}
+
+export interface PagedAlerts {
+  items: Alert[];
+  page: number;
+  size: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface LastAlertSummary {
+  id: number;
+  category: EmergencyCategory;
+  categoryLabel: string;
+  priority: number;
+  status: AlertStatus;
+  createdAt: string;
+}
+
+export interface CategoryCount {
+  category: EmergencyCategory;
+  label: string;
+  count: number;
+}
+
+export interface StatusCount {
+  status: AlertStatus;
+  count: number;
+}
+
+export interface DailyCount {
+  date: string;
+  count: number;
+}
+
+export interface StatsSummary {
+  totalAlerts: number;
+  alertsThisMonth: number;
+  contactCount: number;
+  lastAlert: LastAlertSummary | null;
+  byCategory: CategoryCount[];
+  byStatus: StatusCount[];
+  last30Days: DailyCount[];
+}
+
+export function formatRelativeTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown";
+  }
+  const diffSeconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (diffSeconds < 60) {
+    return "Just now";
+  }
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  if (diffMinutes < 60) {
+    return `${diffMinutes}m ago`;
+  }
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 30) {
+    return `${diffDays}d ago`;
+  }
+  return date.toLocaleDateString();
+}
+
+export function getPriorityBadgeVariant(
+  priority: number
+): "danger" | "warning" | "info" | "neutral" {
+  switch (priority) {
+    case 1:
+      return "danger";
+    case 2:
+      return "warning";
+    case 3:
+      return "info";
+    default:
+      return "neutral";
+  }
+}
+
+export function getStatusBadgeVariant(
+  status: AlertStatus
+): "neutral" | "info" | "success" {
+  switch (status) {
+    case "SENT":
+      return "info";
+    case "RESOLVED":
+      return "success";
+    case "CREATED":
+    case "CANCELLED":
+    default:
+      return "neutral";
+  }
+}
+
+export function getCategoryMeta(category: EmergencyCategory): CategoryMeta {
+  return (
+    CATEGORY_LIST.find((item) => item.value === category) ??
+    CATEGORY_LIST[CATEGORY_LIST.length - 1]
+  );
+}

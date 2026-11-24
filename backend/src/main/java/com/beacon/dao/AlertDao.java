@@ -23,5 +23,7 @@ public interface AlertDao {
 
     Optional<Alert> findByIdAndUserId(int id, int userId);
 
+    List<Alert> findAllByUserId(int userId);
+
     boolean updateStatusByIdAndUserId(int id, int userId, AlertStatus status);
 }

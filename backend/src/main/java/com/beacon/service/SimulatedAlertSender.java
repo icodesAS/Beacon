@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Simulated alert dispatcher that creates recipient snapshots without sending real messages.
+ * Concept (03-java-concepts-map): Abstraction & Polymorphism — implements AlertSender so real SMS can be swapped in later.
  */
 @Component
 public class SimulatedAlertSender implements AlertSender {
