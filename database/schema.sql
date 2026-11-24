@@ -1,0 +1,51 @@
+-- Beacon Database Schema (MySQL 8)
+-- Encoding: utf8mb4 | Engine: InnoDB
+
+CREATE DATABASE IF NOT EXISTS beacon
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE beacon;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS contacts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  phone CHAR(10) NOT NULL,
+  relation VARCHAR(20) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_contacts_user_phone (user_id, phone),
+  CONSTRAINT fk_contacts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS alerts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  category VARCHAR(30) NOT NULL,
+  priority TINYINT NOT NULL,
+  message VARCHAR(300) NOT NULL,
+  location_text VARCHAR(100),
+  status VARCHAR(15) NOT NULL DEFAULT 'CREATED',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_alerts_user_created (user_id, created_at),
+  CONSTRAINT fk_alerts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS alert_recipients (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  alert_id INT NOT NULL,
+  contact_name VARCHAR(50) NOT NULL,
+  contact_phone CHAR(10) NOT NULL,
+  contact_relation VARCHAR(20) NOT NULL,
+  notified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_recipients_alert FOREIGN KEY (alert_id) REFERENCES alerts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;

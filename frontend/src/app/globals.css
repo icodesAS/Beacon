@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-raised: #F1F5F9;
+  --border: #E2E8F0;
+  --text: #0F172A;
+  --text-muted: #64748B;
+  --sos: #DC2626;
+  --sos-glow: #DC262633;
+  --success: #16A34A;
+  --warning: #D97706;
+  --info: #2563EB;
+}
+
+.dark {
+  --bg: #0B0F14;
+  --surface: #121821;
+  --surface-raised: #1A2230;
+  --border: #1F2937;
+  --text: #E5E7EB;
+  --text-muted: #9CA3AF;
+  --sos: #EF4444;
+  --sos-glow: #EF444455;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --info: #3B82F6;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-foreground: var(--text);
+  --color-muted-foreground: var(--text-muted);
+  --color-sos: var(--sos);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
